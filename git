@@ -29,7 +29,7 @@ commited	файлы в снимке
 git init			инициализация репо и создание ветки master по умолчанию
 git add file[s]			добавить unstaged и modified файлы в staged, либо файл с исправленным конфликтом
 git commit -m "message"		коммит с сообщением. Сохраняет снимок в состоянии в момент последнего add
-git commit -a -M "msg"		добавляет modified(но не unstaged) файлы и делает коммит
+git commit -a -m "msg"		добавляет modified(но не unstaged) файлы и делает коммит
 git clone <url>			копировать существующий репо (создает каталог, инициализирует репо и скачивает данные)
     по сути:
     git init
@@ -79,7 +79,7 @@ git log				история коммитов
     --name-status		список добавленных, удаленных и измененных файлов
     --abbrev-commit		показывает только несколько символов хеша
     --relative-date		отображает дату в относительном формате
-    --oneline			сокращение для pretty=oneline --abbrev-commit
+    --oneline			сокращение для --pretty=oneline --abbrev-commit
     --pretty 			меняет формат вывода
 	=oneline		в одну строку на коммит
 	=short/full/fuller	от меньших подробностей к большим
@@ -175,4 +175,66 @@ git push --set-upstream <remote> <new>	залить переименованну
 
 git branch --all		список всех веток (локальных и удаленных)
 
-git push <remote> --delete <branch>	удалить ветку со старым именем после переименования
+git push <remote> --delete <branch>	удалить ветку
+
+git ls-remote <remote>		полный список удаленных ссылок
+git remote show <remote>	информация об удаленных ветках
+git clone -o name url		спулить репозиторий с указанным именем (вместо origin)
+git push <remote> <branch>	отправить локальную ветку в удаленный репо
+git checkout -b name rname	создать локальную ветку name из ветки слежения rname
+git checkout --track rname	аналогично
+git checkout rname		аналогично
+git fetch <remote>		только создаст ветки слежения
+git branch -u rname		настроить локальную ветку для слежения за удаленной веткой rname
+git push -u <remote> <branch>	сокращение push --set-upstream
+git branch -vv			полный список локальных веток и веток, которые они отслеживают и состояние
+git fetch --all			получить данные со всех удаленных репо
+
+
+git rebase <branch>		перебазирование текущей ветки относительно указанной.
+				сначала коммиты из текущей ветки отправляются во временную зону,
+				затем применяются коммиты из указанной ветки, затем коммиты из
+				временной зоны. после этого можно выполнить fast-forward слияние.
+перебазирование не создает коммиты слияния и позволяет сделать fast-forward слияние.
+история коммитов будет выглядеть чище.
+git rebase --onto master br1 br2	найти в ветке br2 изменения относительно ветки br1 и применить
+их к ветке master. после этого можно выполнить слияние ветки master с веткой br2. Делается в случае
+если ветка br2 является потомком ветки br1.
+git rebase <base> <topic>	тоже, что и git rebase <base>, находясь в ветке topic
+git rebase remote/branch	перебазирует сначала коммиты с удаленного репо, затем применит локальные
+git pull --rebase		спулить и перебазировать, а не сливать ветки
+
+
+file:///srv/git/project.git		локальный адрес, с которым гит будет работать как с сетевым
+/srv/git/project.git			аналогично, только быстрее чем сетевой адрес
+https://github.com/schacon/simplegit	"умный" http
+ssh://[user@]server/project.git		ssh - быстро, безопасно, популярно
+
+git clone --bare dir name.git		создать новый пустой репозиторий
+
+git diff --check			вывести список ненужных пробелов
+
+git rebase -i				интерактивный rebase, позволяет изменять сделанные коммиты
+
+git cherry-pick				позволяет выбирать определенные коммиты из ветки
+
+git request-pull			запрос слияния форк-проекта
+git request pull <base branch> <fork>	base branch - куда сливать изменения, fork - где они находятся
+
+git merge --squash <branch>		берет все изменения из указанной ветки, объединяет и создает
+					новый коммит в текущей ветки без создания коммита слияния
+
+синхронизация форка в случае изменения основного:
+git checkout master
+git pull <uri>
+git push origin master
+
+или можно настроить:
+git remote add origin uri
+git fetch origin
+git branch --set-upstream-to=origin/master master
+git config --local remote.pushDefault origin
+
+git checkout master
+git pull
+pit push
